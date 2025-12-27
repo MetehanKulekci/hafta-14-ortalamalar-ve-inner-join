@@ -1,0 +1,77 @@
+SELECT        *
+FROM            alinan_sut
+WHERE        (sut_lt <
+                             (SELECT        SUM(sut_lt) / COUNT(sut_lt) AS Expr1
+                               FROM            alinan_sut AS alinan_sut_1))
+
+
+
+SELECT       *
+FROM            alinan_sut
+WHERE        (sut_lt <
+                             (SELECT        AVG(sut_lt) AS Expr1
+                               FROM            alinan_sut AS alinan_sut_1))
+
+
+
+SELECT        sut_id, musteri_kodu, sut_fiyat, sut_lt, sut_tutar, tarih
+FROM            alinan_sut
+WHERE        (musteri_kodu = 229)
+
+
+
+SELECT        musteri_kodu, SUM(sut_lt) 
+FROM            alinan_sut
+GROUP BY musteri_kodu
+
+
+
+SELECT        musteri_kodu, SUM(sut_lt) AS Expr1
+FROM            alinan_sut
+WHERE        (musteri_kodu = 229)
+GROUP BY musteri_kodu
+
+
+
+SELECT        musteri_kodu, SUM(sut_lt) AS Expr1
+FROM            alinan_sut
+GROUP BY musteri_kodu
+
+
+
+SELECT        AVG(ali) AS Expr1
+FROM            (SELECT        musteri_kodu, SUM(sut_lt) AS ali
+                          FROM            alinan_sut
+                          GROUP BY musteri_kodu) AS derivedtbl_1
+
+
+
+SELECT        alinan_sut.musteri_kodu, alinan_sut.sut_tutar, verilen_urun.urun_tutar
+FROM            alinan_sut INNER JOIN
+                         verilen_urun ON alinan_sut.musteri_kodu = verilen_urun.musteri_kodu
+
+
+
+SELECT        alinan_sut.musteri_kodu, SUM(alinan_sut.sut_tutar) , SUM(verilen_urun.urun_tutar) 
+FROM            alinan_sut INNER JOIN
+                         verilen_urun ON alinan_sut.musteri_kodu = verilen_urun.musteri_kodu
+GROUP BY alinan_sut.musteri_kodu
+ORDER BY alinan_sut.musteri_kodu DESC
+
+
+
+-- =============================================
+CREATE PROCEDURE ayliksuthesabi(
+	
+@tarih1 DATETIME,
+@tarih2 DATETIME)
+AS
+BEGIN
+      
+SELECT  SUM(sut_tutar)
+FROM alinan_sut
+WHERE (tarih BETWEEN @tarih1 AND @tarih2)
+END
+GO
+
+exec ayliksuthesabi '2014-11-01','2014-12-01'
